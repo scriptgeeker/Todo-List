@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>高效清单</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="一款运用本地存储技术与响应式布局实现的任务管理工具">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="stylesheet" href="./style/computer.css" media="screen and (min-width:720px)">
+    <link rel="stylesheet" href="./style/phone.css" media="screen and (max-width:720px)">
+</head>
+
+<body>
+    <div id="app">
+        <div class="header">
+            <div class="current-date">{{currentDate}}</div>
+            <div class="change-view" v-on:click="changeView">
+                <div class="selected">{{viewTypeZH}}</div>
+                <ul class="hide">
+                    <li data-type="all">全部</li>
+                    <li data-type="done">已完成</li>
+                    <li data-type="doing">未完成</li>
+                </ul>
+            </div>
+            <div class="new-task" v-on:click="editTask(newTask())"></div>
+        </div>
+        <!--END:header-->
+        <div class="container">
+            <div class="task-box box-1">
+                <div class="head">
+                    <h3>很重要-很紧急</h3>
+                    <a style="cursor: pointer;" v-on:click="editTask(newTask(1))">+</a>
+                </div>
+                <div class="body">
+                    <ul v-on:click="taskBoxClick">
+                        <li v-for="task in taskQueue" v-if="(task.type === 1)" v-show="showTask(task.status)"
+                            v-bind:data-tsid="task.tsid" v-bind:class="(task.status?'done':'doing')">
+                            <div class="radio radio-1"><span></span></div>
+                            <div class="title">{{task.title}}</div>
+                            <div class="time">{{formatTime(task.tsid)}}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="task-box box-2">
+                <div class="head">
+                    <h3>很重要-不紧急</h3>
+                    <a style="cursor: pointer;" v-on:click="editTask(newTask(2))">+</a>
+                </div>
+                <div class="body">
+                    <ul v-on:click="taskBoxClick">
+                        <li v-for="task in taskQueue" v-if="(task.type === 2)" v-show="showTask(task.status)"
+                            v-bind:data-tsid="task.tsid" v-bind:class="(task.status?'done':'doing')">
+                            <div class="radio radio-2"><span></span></div>
+                            <div class="title">{{task.title}}</div>
+                            <div class="time">{{formatTime(task.tsid)}}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="task-box box-3">
+                <div class="head">
+                    <h3>不重要-很紧急</h3>
+                    <a style="cursor: pointer;" v-on:click="editTask(newTask(3))">+</a>
+                </div>
+                <div class="body">
+                    <ul v-on:click="taskBoxClick">
+                        <li v-for="task in taskQueue" v-if="(task.type === 3)" v-show="showTask(task.status)"
+                            v-bind:data-tsid="task.tsid" v-bind:class="(task.status?'done':'doing')">
+                            <div class="radio radio-3"><span></span></div>
+                            <div class="title">{{task.title}}</div>
+                            <div class="time">{{formatTime(task.tsid)}}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="task-box box-4">
+                <div class="head">
+                    <h3>不重要-不紧急</h3>
+                    <a style="cursor: pointer;" v-on:click="editTask(newTask(4))">+</a>
+                </div>
+                <div class="body">
+                    <ul v-on:click="taskBoxClick">
+                        <li v-for="task in taskQueue" v-if="(task.type === 4)" v-show="showTask(task.status)"
+                            v-bind:data-tsid="task.tsid" v-bind:class="(task.status?'done':'doing')">
+                            <div class="radio radio-4"><span></span></div>
+                            <div class="title">{{task.title}}</div>
+                            <div class="time">{{formatTime(task.tsid)}}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!--END:container-->
+        <div v-bind:class="footer.class" v-bind:style="footer.style">
+            <div class="mask" v-on:click="mainView()"></div>
+            <div class="former">
+                <div class="btn-group">
+                    <button id="btn-delete" v-on:click="deleteTask">删除</button>
+                    <button id="btn-save" v-on:click="saveTask"
+                        v-bind:class="(inputTask.title?'':'disabled')">保存</button>
+                </div>
+                <div v-bind:class="['input-task','task-' + inputTask.type]">
+                    <input type="text" placeholder="输入待办任务" v-model.trim="inputTask.title">
+                </div>
+                <ul class="radio-group" v-on:click="selTaskType">
+                    <li v-bind:class="((inputTask.type == 1)?'active':'')">
+                        <div class="radio radio-1">
+                            <span></span>
+                        </div>
+                        <p>很重要-很紧急</p>
+                    </li>
+                    <li v-bind:class="((inputTask.type == 2)?'active':'')">
+                        <div class="radio radio-2">
+                            <span></span>
+                        </div>
+                        <p>很重要-不紧急</p>
+                    </li>
+                    <li v-bind:class="((inputTask.type == 3)?'active':'')">
+                        <div class="radio radio-3">
+                            <span></span>
+                        </div>
+                        <p>不重要-很紧急</p>
+                    </li>
+                    <li v-bind:class="((inputTask.type == 4)?'active':'')">
+                        <div class="radio radio-4">
+                            <span></span>
+                        </div>
+                        <p>不重要-不紧急</p>
+                    </li>
+                </ul>
+                <div class="text-area">
+                    <p>任务备注 ↓↓↓</p>
+                    <textarea placeholder="输入内容" v-model="inputTask.remark"></textarea>
+                </div>
+            </div>
+        </div>
+        <!--END:footer-->
+    </div>
+
+    <script src="./lib/localforage.min.js"></script>
+    <script src="./lib/vue.min.js"></script>
+    <script src="./script.js"></script>
+</body>
+
+</html>
