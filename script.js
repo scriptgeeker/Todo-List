@@ -85,7 +85,7 @@ let vm = new Vue({
             }
             return -1;
         },
-        deleteTask: function () {　// 删除任务
+        deleteTask: function () { // 删除任务
             if (this.inputTask.tsid === '') return;
             let index = this.queryIndex(this.inputTask.tsid);
             if (index !== -1) {
@@ -140,7 +140,7 @@ let vm = new Vue({
         formatTime: function (timestamp) { // 时间格式化
             let date = new Date(timestamp);
             let MM = ('00' + (date.getMonth() + 1)).slice(-2);
-            let DD = ('00' + date.getDay()).slice(-2);
+            let DD = ('00' + date.getDate()).slice(-2);
             let hh = ('00' + date.getHours()).slice(-2);
             let mm = ('00' + date.getMinutes()).slice(-2);
             return (MM + '/' + DD + ' ' + hh + ':' + mm);
